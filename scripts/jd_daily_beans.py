@@ -535,16 +535,21 @@ def main() -> int:
     ap.add_argument("--no-cleanup", action="store_true", help="keep the temporary tabs open")
     args = ap.parse_args()
 
-    cfg = load_config(args.config)
-    if args.max_rounds:
-        cfg["max_task_rounds"] = args.max_rounds
-
-    log_dir = Path(cfg.get("log_dir") or default_data_dir() / "logs")
-    log_dir.mkdir(parents=True, exist_ok=True)
-    LOGGER["path"] = str(log_dir / f"{dt.date.today():%Y-%m-%d}.log")
+    # Open a file sink before load_config(): under pythonw.exe there is no
+    # console, so anything logged before this point would be lost.
+    fallback_log_dir = default_data_dir() / "logs"
+    fallback_log_dir.mkdir(parents=True, exist_ok=True)
+    LOGGER["path"] = str(fallback_log_dir / f"{dt.date.today():%Y-%m-%d}.log")
 
     log("=" * 60)
     log(f"jd-daily-beans start (dry_run={args.dry_run}, force={args.force})")
+
+    cfg = load_config(args.config)
+    if args.max_rounds:
+        cfg["max_task_rounds"] = args.max_rounds
+    log_dir = Path(cfg.get("log_dir") or fallback_log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
+    LOGGER["path"] = str(log_dir / f"{dt.date.today():%Y-%m-%d}.log")
 
     if not args.force and not args.dry_run and already_ran_today(cfg):
         log("already completed today; skipping (use --force to override)")
