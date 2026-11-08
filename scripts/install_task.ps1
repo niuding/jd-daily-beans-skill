@@ -42,18 +42,26 @@ function Resolve-PythonExe {
     if ($Preferred) { $candidates += $Preferred }
     if ($env:JD_BEANS_PYTHON) { $candidates += $env:JD_BEANS_PYTHON }
 
+    # Prefer real interpreters over the Microsoft Store alias (WindowsApps),
+    # which is a stub that opens the Store instead of running Python.
+    $versions = Join-Path $env:USERPROFILE '.workbuddy\binaries\python\versions\*\pythonw.exe'
+    $bundled = @(Get-ChildItem -Path $versions -ErrorAction SilentlyContinue |
+                 Sort-Object FullName | Select-Object -ExpandProperty FullName)
+    if ($bundled.Count -gt 0) { $candidates += $bundled }
+
+    $localInstalls = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python*\pythonw.exe'
+    $installed = @(Get-ChildItem -Path $localInstalls -ErrorAction SilentlyContinue |
+                   Sort-Object FullName | Select-Object -ExpandProperty FullName)
+    if ($installed.Count -gt 0) { $candidates += $installed }
+
     $cmd = Get-Command pythonw -ErrorAction SilentlyContinue
     if ($cmd) { $candidates += $cmd.Source }
     $cmd = Get-Command python -ErrorAction SilentlyContinue
     if ($cmd) { $candidates += $cmd.Source }
 
-    $versions = Join-Path $env:USERPROFILE '.workbuddy\binaries\python\versions\*\pythonw.exe'
-    $found = Get-ChildItem -Path $versions -ErrorAction SilentlyContinue |
-             Select-Object -ExpandProperty FullName
-    if ($found) { $candidates += $found }
-
     foreach ($candidate in $candidates) {
         if (-not $candidate) { continue }
+        if ($candidate -like '*WindowsApps*') { continue }
         $path = $candidate
         if ($path -like '*python.exe') {
             $windowless = Join-Path (Split-Path -Parent $path) 'pythonw.exe'

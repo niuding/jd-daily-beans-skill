@@ -144,7 +144,12 @@ BEAN_BALANCE = r"""
 
 def log(msg: str) -> None:
     line = f"[{dt.datetime.now():%Y-%m-%d %H:%M:%S}] {msg}"
-    print(line, flush=True)
+    # pythonw.exe has no console; print() is a no-op for None stdout, but guard
+    # it anyway so logging can never abort a scheduled run.
+    try:
+        print(line, flush=True)
+    except (AttributeError, OSError, ValueError):
+        pass
     if LOGGER["path"]:
         try:
             with open(LOGGER["path"], "a", encoding="utf-8") as fh:
