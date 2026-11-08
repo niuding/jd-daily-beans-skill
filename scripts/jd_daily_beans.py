@@ -174,7 +174,9 @@ def load_config(path: str | None) -> dict:
     p = Path(candidate)
     if p.is_file():
         try:
-            cfg.update({k: v for k, v in json.loads(p.read_text(encoding="utf-8")).items() if v is not None})
+            # utf-8-sig strips the BOM that PowerShell 5.1 Set-Content adds.
+            raw = p.read_text(encoding="utf-8-sig")
+            cfg.update({k: v for k, v in json.loads(raw).items() if v is not None})
             log(f"config loaded: {p}")
         except (OSError, ValueError) as exc:
             log(f"WARNING: cannot read config {p}: {exc}")

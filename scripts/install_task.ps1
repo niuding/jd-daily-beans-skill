@@ -100,7 +100,13 @@ $config = @{
 if (Test-Path $configPath) {
     Write-Host "Keeping existing config.json: $configPath"
 } else {
-    $config | ConvertTo-Json | Set-Content -Path $configPath -Encoding UTF8
+    # UTF-8 without BOM: PowerShell 5.1's Set-Content -Encoding UTF8 adds a
+    # BOM that makes Python's json.loads() fail.
+    [System.IO.File]::WriteAllText(
+        $configPath,
+        ($config | ConvertTo-Json),
+        [System.Text.UTF8Encoding]::new($false)
+    )
     Write-Host "Wrote config.json: $configPath"
 }
 
