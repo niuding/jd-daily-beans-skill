@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy to config.json and adjust. Never commit config.json: it may contain machine-specific paths. Empty strings mean auto-detect.",
+  "cli_path": "",
+  "home_url": "https://home.jd.com/",
+  "search_url": "https://search.jd.com/Search?keyword=%E4%BA%AC%E8%B1%86",
+  "bean_list_url": "https://bean.jd.com/myJingBean/list",
+  "task_wait_seconds": 7,
+  "max_task_rounds": 16,
+  "page_wait_seconds": 3,
+  "allow_signin": true,
+  "allow_browse_tasks": true,
+  "close_temp_tabs": true,
+  "earliest_hour": 0,
+  "log_dir": "",
+  "state_dir": ""
+}

@@ -1,0 +1,19 @@
+# Local machine-specific configuration and runtime state
+config.json
+scripts/.runtime.cmd
+
+# Logs and per-day guard state
+logs/
+*.log
+last_run.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
