@@ -35,7 +35,7 @@ DEFAULTS = {
     "search_url": "https://search.jd.com/Search?keyword=%E4%BA%AC%E8%B1%86",
     "bean_list_url": "https://bean.jd.com/myJingBean/list",
     "task_wait_seconds": 7,
-    "max_task_rounds": 16,
+    "max_task_rounds": 32,
     "page_wait_seconds": 3,
     "allow_signin": True,
     "allow_browse_tasks": True,
@@ -481,7 +481,7 @@ def run(args, cfg: dict) -> dict:
         else:
             injected = cli.js(search, INJECT_VISIBILITY) or {}
             log(f"visibility injection: {injected}")
-            rounds = min(int(cfg["max_task_rounds"]), 20)
+            rounds = min(int(cfg["max_task_rounds"]), 40)
             for i in range(1, rounds + 1):
                 state = cli.js(search, TASK_STATE) or {}
                 pending = int(state.get("pending") or 0)
